@@ -1,0 +1,14 @@
+{
+  "args": {},
+  "data": {
+    "name": "Test User",
+    "email": "test@example.com",
+    "age": 25
+  },
+  "headers": {
+    "accept": "*/*",
+    "content-type": "application/json",
+    "host": "postman-echo.com"
+  },
+  "url": "https://postman-echo.com/post"
+}
