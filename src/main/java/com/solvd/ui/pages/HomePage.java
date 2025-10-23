@@ -1,5 +1,7 @@
 package com.solvd.ui.pages;
 
+import com.solvd.ui.components.FooterComponent;
+import com.solvd.ui.components.HeaderComponent;
 import com.zebrunner.carina.webdriver.decorator.ExtendedWebElement;
 import com.zebrunner.carina.webdriver.gui.AbstractPage;
 import org.openqa.selenium.WebDriver;
@@ -28,6 +30,15 @@ public class HomePage extends AbstractPage {
 
     @FindBy(xpath = "//img[@alt='Selenium Online Training']")
     private ExtendedWebElement seleniumBanner;
+
+    @FindBy(tagName = "header")
+    private ExtendedWebElement headerContext;
+
+    @FindBy(tagName = "footer")
+    private ExtendedWebElement footerContext;
+
+    @FindBy(className = "left-pannel")
+    private ExtendedWebElement sidebarRoot;
 
     public HomePage(WebDriver driver) {
         super(driver);
@@ -59,7 +70,7 @@ public class HomePage extends AbstractPage {
                 "arguments[0].scrollIntoView({block: 'center'});",
                 card.getElement()
         );
-        pause(1); // коротка пауза для стабільності
+        pause(1);
     }
 
     private void pause(int seconds) {

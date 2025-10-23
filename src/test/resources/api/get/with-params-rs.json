@@ -1,7 +1,0 @@
-{
-  "args": {
-    "name": "John",
-    "age": "30"
-  },
-  "url": "https://postman-echo.com/get?name=John&age=30"
-}

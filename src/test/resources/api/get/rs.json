@@ -1,9 +1,0 @@
-{
-  "args": {},
-  "headers": {
-    "accept": "*/*",
-    "content-type": "application/json",
-    "host": "postman-echo.com"
-  },
-  "url": "https://postman-echo.com/get"
-}

@@ -1,5 +1,6 @@
 package com.solvd.ui.pages;
 
+import com.solvd.ui.components.SidebarMenuComponent;
 import com.zebrunner.carina.webdriver.decorator.ExtendedWebElement;
 import com.zebrunner.carina.webdriver.gui.AbstractPage;
 import org.openqa.selenium.JavascriptExecutor;
@@ -48,6 +49,31 @@ public class ElementsPage extends AbstractPage {
     @FindBy(className = "text-success")
     private ExtendedWebElement radioButtonResult;
 
+    @FindBy(xpath = "//span[text()='Dynamic Properties']")
+    private ExtendedWebElement dynamicPropertiesMenu;
+
+    @FindBy(id = "enableAfter")
+    private ExtendedWebElement enableAfterButton;
+
+    @FindBy(id = "colorChange")
+    private ExtendedWebElement colorChangeButton;
+
+    @FindBy(xpath = "//span[text()='Upload and Download']")
+    private ExtendedWebElement uploadDownloadMenu;
+
+    @FindBy(id = "uploadFile")
+    private ExtendedWebElement uploadInput;
+
+    @FindBy(id = "uploadedFilePath")
+    private ExtendedWebElement uploadMessage;
+
+    @FindBy(className = "left-pannel")
+    private ExtendedWebElement sidebarContext;
+
+    public ElementsPage(WebDriver driver) {
+        super(driver);
+    }
+
     public void clickRadioButtonMenu() {
         radioButtonMenu.click();
     }
@@ -78,10 +104,6 @@ public class ElementsPage extends AbstractPage {
         return false;
     }
 
-    public ElementsPage(WebDriver driver) {
-        super(driver);
-    }
-
     public void clickTextBoxMenu() {
         textBoxMenu.click();
     }
@@ -96,20 +118,13 @@ public class ElementsPage extends AbstractPage {
     }
 
     public void clickSubmit() {
-        // Спочатку скроллимо до кнопки
         ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", submitButton.getElement());
-
-        // Коротка пауза для стабільності
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-
-        // Використовуємо JavaScript клік
         ((JavascriptExecutor) getDriver()).executeScript("arguments[0].click();", submitButton.getElement());
-
-        // Не чекаємо на outputDiv тут - це буде робити тест
     }
 
     public String getOutputText(int i) {
@@ -120,5 +135,29 @@ public class ElementsPage extends AbstractPage {
         if (index < checkBoxOptions.size()) {
             checkBoxOptions.get(index).click();
         }
+    }
+
+    public void clickDynamicPropertiesMenu() {
+        dynamicPropertiesMenu.click();
+    }
+
+    public void clickUploadDownloadMenu() {
+        uploadDownloadMenu.click();
+    }
+
+    public void uploadFile(String filePath) {
+        uploadInput.attachFile(filePath);
+    }
+
+    public ExtendedWebElement getUploadMessage() {
+        return uploadMessage;
+    }
+
+    public ExtendedWebElement getEnableAfterButton() {
+        return enableAfterButton;
+    }
+
+    public ExtendedWebElement getUploadInput() {
+        return uploadInput;
     }
 }
