@@ -6,10 +6,13 @@ import com.zebrunner.carina.api.annotation.SuccessfulHttpStatus;
 import com.zebrunner.carina.api.http.HttpMethodType;
 import com.zebrunner.carina.api.http.HttpResponseStatusType;
 import io.restassured.response.Response;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Endpoint(url = "${base_url}/get?name=${name}&age=${age}", methodType = HttpMethodType.GET)
 @SuccessfulHttpStatus(status = HttpResponseStatusType.OK_200)
 public class GetWithParamsMethod extends AbstractApiMethodV2 {
+    private static final Logger logger = LogManager.getLogger(GetWithParamsMethod.class);
 
     public GetWithParamsMethod() {
         replaceUrlPlaceholder("base_url", "https://postman-echo.com");
@@ -51,6 +54,6 @@ public class GetWithParamsMethod extends AbstractApiMethodV2 {
             throw new RuntimeException("Response should contain the age '30'");
         }
 
-        System.out.println("GET with params validation passed!");
+        logger.info("GET with params validation passed!");
     }
 }

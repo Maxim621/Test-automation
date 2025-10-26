@@ -6,10 +6,13 @@ import com.zebrunner.carina.api.annotation.SuccessfulHttpStatus;
 import com.zebrunner.carina.api.http.HttpMethodType;
 import com.zebrunner.carina.api.http.HttpResponseStatusType;
 import io.restassured.response.Response;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Endpoint(url = "${base_url}/put", methodType = HttpMethodType.PUT)
 @SuccessfulHttpStatus(status = HttpResponseStatusType.OK_200)
 public class PutMethod extends AbstractApiMethodV2 {
+    private static final Logger logger = LogManager.getLogger(PutMethod.class);
 
     public PutMethod() {
         replaceUrlPlaceholder("base_url", "https://postman-echo.com");
@@ -31,6 +34,6 @@ public class PutMethod extends AbstractApiMethodV2 {
             throw new RuntimeException("Response should contain 'data' field");
         }
 
-        System.out.println("PUT Response validation passed!");
+        logger.info("PUT Response validation passed!");
     }
 }

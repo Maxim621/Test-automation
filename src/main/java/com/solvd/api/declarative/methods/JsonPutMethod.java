@@ -6,10 +6,13 @@ import com.zebrunner.carina.api.annotation.SuccessfulHttpStatus;
 import com.zebrunner.carina.api.http.HttpMethodType;
 import com.zebrunner.carina.api.http.HttpResponseStatusType;
 import io.restassured.response.Response;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Endpoint(url = "${base_url}/put", methodType = HttpMethodType.PUT)
 @SuccessfulHttpStatus(status = HttpResponseStatusType.OK_200)
 public class JsonPutMethod extends AbstractApiMethodV2 {
+    private static final Logger logger = LogManager.getLogger(JsonPutMethod.class);
 
     public JsonPutMethod() {
         replaceUrlPlaceholder("base_url", "https://postman-echo.com");
@@ -44,6 +47,6 @@ public class JsonPutMethod extends AbstractApiMethodV2 {
             throw new RuntimeException("Response should contain the sent JSON message");
         }
 
-        System.out.println("JSON PUT validation passed!");
+        logger.info("JSON PUT validation passed!");
     }
 }
