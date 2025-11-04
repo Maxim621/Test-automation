@@ -28,7 +28,7 @@ public class BaseAndroidTest extends AbstractTest {
         logger.info("Setting up Android test...");
 
         String projectDir = System.getProperty("user.dir");
-        String appPath = projectDir + "\\src\\main\\resources\\android\\apps\\app.apk";
+        String appPath = projectDir + "/src/main/resources/android/apps/app.apk";
 
         logger.info("APK path: {}", appPath);
 
@@ -50,7 +50,7 @@ public class BaseAndroidTest extends AbstractTest {
                 .setNoReset(false)
                 .setNewCommandTimeout(Duration.ofSeconds(300));
 
-        String appiumUrl = "http://127.0.0.1:4723";
+        String appiumUrl = System.getenv().getOrDefault("APPIUM_URL", "http://localhost:4723");
         logger.info("Connecting to Appium server: {}", appiumUrl);
 
         try {
