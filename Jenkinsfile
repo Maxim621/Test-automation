@@ -6,11 +6,6 @@ pipeline {
         jdk 'JDK21'
     }
 
-    environment {
-        SELENIUM_HUB_URL = 'http://selenium-hub:4444'
-        APPIUM_URL = 'http://appium:4723'
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -23,33 +18,27 @@ pipeline {
             steps {
                 sh '''
                     docker-compose up -d selenium-hub chrome firefox appium
+                    echo "Waiting for services to start..."
                     sleep 30
                 '''
             }
         }
 
-        stage('Build & Test') {
+        stage('Build Test Image') {
             steps {
-                sh 'mvn clean compile'
+                sh 'docker-compose build test-runner'
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'mvn test -Dselenium.hub.url=http://selenium-hub:4444 -Dappium.url=http://appium:4723'
+                sh 'docker-compose up --exit-code-from test-runner test-runner'
             }
             post {
                 always {
-                    junit 'target/surefire-reports/*.xml'
-                    archiveArtifacts 'target/*.jar'
-                }
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    docker.build("test-automation:${env.BUILD_ID}")
+                    junit 'test-reports/*.xml'
+                    archiveArtifacts 'test-reports/*.xml'
+                    archiveArtifacts 'screenshots/*.png'
                 }
             }
         }
@@ -57,7 +46,7 @@ pipeline {
 
     post {
         always {
-            sh 'docker-compose down'
+            sh 'docker-compose down --remove-orphans'
             cleanWs()
         }
         success {

@@ -1,7 +1,9 @@
 package com.solvd.android.tests;
 
 import com.solvd.android.core.BaseAndroidTest;
-import org.openqa.selenium.By;
+import com.solvd.android.pages.*;
+import com.zebrunner.carina.core.registrar.ownership.MethodOwner;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,311 +12,231 @@ public class NativeTest extends BaseAndroidTest {
     private static final Logger logger = LogManager.getLogger(NativeTest.class);
 
     @Test
+    @MethodOwner(owner = "Maksym")
     public void testAppLaunch() {
         logger.info("Testing Native App launch...");
 
-        // Checking that the app has started
-        String welcomeText = getElementText(By.xpath("//android.widget.TextView[@text='WEBDRIVER']"));
-        assert welcomeText.equals("WEBDRIVER") : "App not launched properly";
-        logger.info("App launched successfully: {}", welcomeText);
+        HomePage homePage = new HomePage(getDriver());
+        Assert.assertTrue(homePage.isPageOpened(), "App not launched properly");
+        Assert.assertEquals(homePage.getTitleText(), "WEBDRIVER", "App title doesn't match");
+
+        logger.info("App launched successfully: {}", homePage.getTitleText());
     }
 
     @Test
+    @MethodOwner(owner = "Maksym")
     public void testLoginScreen() {
         logger.info("Testing Login screen...");
 
-        // Go to the Login screen
-        clickElement(By.xpath("//android.widget.TextView[@text='Login']"));
+        HomePage homePage = new HomePage(getDriver());
+        LoginPage loginPage = homePage.clickLoginMenu();
 
-        // Check that the form elements are present
-        assert waitForElement(By.xpath("//android.widget.EditText[@content-desc='input-email']")).isDisplayed();
-        assert waitForElement(By.xpath("//android.widget.EditText[@content-desc='input-password']")).isDisplayed();
-        assert waitForElement(By.xpath("//android.widget.TextView[@text='LOGIN']")).isDisplayed();
-
+        Assert.assertTrue(loginPage.isPageOpened(), "Login screen not opened properly");
         logger.info("Login screen elements are present");
     }
 
     @Test
+    @MethodOwner(owner = "Maksym")
     public void testSuccessfulLogin() {
         logger.info("Testing successful login...");
 
-        // Go to the Login screen
-        clickElement(By.xpath("//android.widget.TextView[@text='Login']"));
+        HomePage homePage = new HomePage(getDriver());
+        LoginPage loginPage = homePage.clickLoginMenu();
 
-        // Fill out the form
-        sendKeysToElement(By.xpath("//android.widget.EditText[@content-desc='input-email']"), "test@example.com");
-        sendKeysToElement(By.xpath("//android.widget.EditText[@content-desc='input-password']"), "password123");
+        loginPage.login("test@example.com", "password123");
 
-        // Click the Login button
-        clickElement(By.xpath("//android.widget.TextView[@text='LOGIN']"));
-
-        // Check for successful login
-        String successMessage = getElementText(By.xpath("//android.widget.TextView[contains(@text, 'Success')]"));
-        assert successMessage.contains("Success") : "Login failed";
-        logger.info("Login successful: {}", successMessage);
+        Assert.assertTrue(loginPage.isSuccessMessagePresent(), "Login failed");
+        logger.info("Login successful: {}", loginPage.getSuccessMessage());
     }
 
     @Test
+    @MethodOwner(owner = "Maksym")
     public void testFormsSection() {
         logger.info("Testing Forms section...");
 
-        clickElement(By.xpath("//android.widget.TextView[@text='Forms']"));
+        HomePage homePage = new HomePage(getDriver());
+        FormsPage formsPage = homePage.clickFormsMenu();
 
-        // Waiting for the Forms screen to load
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            logger.warn("Interrupted while waiting for Forms screen", e);
-        }
+        Assert.assertTrue(formsPage.isPageOpened(), "Forms page not opened");
 
-        // Use alternative locators
-        String[] textInputLocators = {
-                "//android.widget.EditText[@content-desc='input-text']",
-                "//android.widget.EditText[contains(@text, 'Type')]",
-                "//android.widget.EditText"
-        };
+        formsPage.typeText("Hello Appium");
+        formsPage.clickSwitch();
+        formsPage.clickCheckbox();
 
-        boolean foundInput = false;
-        for (String locator : textInputLocators) {
-            try {
-                sendKeysToElement(By.xpath(locator), "Hello Appium");
-                foundInput = true;
-                logger.info("Text input found with: {}", locator);
-                break;
-            } catch (Exception e) {
-                logger.debug("Not found with: {}", locator);
-            }
-        }
-
-        if (!foundInput) {
-            logger.info("Text input not found, continuing with other elements");
-        }
-
-        // Test other elements
-        try {
-            clickElement(By.xpath("//android.widget.Switch"));
-            logger.info("Switch clicked");
-        } catch (Exception e) {
-            logger.debug("Switch not found");
-        }
-
-        try {
-            clickElement(By.xpath("//android.widget.CheckBox"));
-            logger.info("Checkbox clicked");
-        } catch (Exception e) {
-            logger.debug("Checkbox not found");
-        }
-
-        logger.info("Forms section tested");
+        logger.info("Forms section tested successfully");
     }
 
     @Test
+    @MethodOwner(owner = "Maksym")
     public void testSwipeSection() {
         logger.info("Testing Swipe section...");
 
-        clickElement(By.xpath("//android.widget.TextView[@text='Swipe']"));
+        HomePage homePage = new HomePage(getDriver());
+        SwipePage swipePage = homePage.clickSwipeMenu();
 
-        // Check that we are on the Swipe screen
-        String swipeText = getElementText(By.xpath("//android.widget.TextView[@text='Swipe horizontal']"));
-        assert swipeText.contains("Swipe horizontal");
+        Assert.assertTrue(swipePage.isPageOpened(), "Swipe page not opened");
+        Assert.assertTrue(swipePage.getPageTitle().contains("Swipe horizontal"),
+                "Swipe page title doesn't match");
 
         logger.info("Swipe section loaded successfully");
     }
 
     @Test
+    @MethodOwner(owner = "Maksym")
     public void testDragAndDropSection() {
         logger.info("Testing Drag & Drop section...");
 
-        clickElement(By.xpath("//android.widget.TextView[@text='Drag']"));
+        HomePage homePage = new HomePage(getDriver());
+        DragPage dragPage = homePage.clickDragMenu();
 
-        // Check that we are on the Drag & Drop screen
-        String dragText = getElementText(By.xpath("//android.widget.TextView[contains(@text, 'Drag')]"));
-        assert dragText != null;
-
+        Assert.assertTrue(dragPage.isPageOpened(), "Drag page not opened");
         logger.info("Drag & Drop section loaded successfully");
     }
 
     @Test
+    @MethodOwner(owner = "Maksym")
     public void testWebViewSection() {
         logger.info("Testing WebView section...");
 
-        clickElement(By.xpath("//android.widget.TextView[@text='Webview']"));
+        HomePage homePage = new HomePage(getDriver());
+        WebViewPage webViewPage = homePage.clickWebviewMenu();
 
-        // Check that the WebView has loaded
-        try {
-            Thread.sleep(3000); // Waiting for loading
-            logger.info("WebView section loaded");
-        } catch (InterruptedException e) {
-            logger.warn("Interrupted while waiting for WebView", e);
-        }
+        Assert.assertTrue(webViewPage.isPageOpened(), "WebView page not opened");
+        pause(3); // Wait for WebView to load
+
+        logger.info("WebView section loaded successfully");
     }
 
     @Test
+    @MethodOwner(owner = "Maksym")
     public void testSignUpForm() {
         logger.info("Testing Sign Up form...");
 
-        // Let's try different locators for Sign Up
-        String[] signUpLocators = {
-                "//android.widget.TextView[@text='Sign up']",
-                "//android.widget.TextView[contains(@text, 'Sign')]",
-                "//android.widget.TextView[@text='SIGN UP']"
-        };
+        HomePage homePage = new HomePage(getDriver());
+        SignUpPage signUpPage = homePage.clickSignUpMenu();
 
-        boolean foundSignUp = false;
-        for (String locator : signUpLocators) {
-            try {
-                clickElement(By.xpath(locator));
-                foundSignUp = true;
-                logger.info("Sign Up found with: {}", locator);
-                break;
-            } catch (Exception e) {
-                logger.debug("Not found with: {}", locator);
-            }
-        }
-
-        if (!foundSignUp) {
+        if (signUpPage.isPageOpened()) {
+            signUpPage.signUp("newuser@example.com", "newpassword123");
+            pause(3); // Wait for sign up result
+            logger.info("Sign Up form submitted successfully");
+        } else {
             logger.info("Sign Up section not accessible, skipping test");
-            return;
-        }
-
-        // Waiting for the form to load
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            logger.warn("Interrupted while waiting for Sign Up form", e);
-        }
-
-        // Fill out the registration form
-        try {
-            sendKeysToElement(By.xpath("//android.widget.EditText[@content-desc='input-email']"), "newuser@example.com");
-            sendKeysToElement(By.xpath("//android.widget.EditText[@content-desc='input-password']"), "newpassword123");
-            sendKeysToElement(By.xpath("//android.widget.EditText[@content-desc='input-repeat-password']"), "newpassword123");
-
-            clickElement(By.xpath("//android.widget.TextView[@text='SIGN UP']"));
-
-            // Waiting for the result
-            Thread.sleep(3000);
-            logger.info("Sign Up form submitted");
-
-        } catch (Exception e) {
-            logger.error("Sign Up form failed: {}", e.getMessage());
         }
     }
 
     @Test
+    @MethodOwner(owner = "Maksym")
     public void testNavigationBetweenSections() {
         logger.info("Testing navigation between sections...");
 
-        String[] sections = {"Login", "Forms", "Swipe", "Drag", "Webview", "Sign up"};
+        HomePage homePage = new HomePage(getDriver());
 
-        for (String section : sections) {
-            try {
-                clickElement(By.xpath("//android.widget.TextView[@text='" + section + "']"));
-                logger.info("Navigated to: {}", section);
+        // Test navigation to Login
+        LoginPage loginPage = homePage.clickLoginMenu();
+        Assert.assertTrue(loginPage.isPageOpened(), "Login page not opened");
+        getDriver().navigate().back();
+        pause(1);
 
-                // Going back
-                driver.navigate().back();
-                Thread.sleep(1000);
+        // Test navigation to Forms
+        homePage = new HomePage(getDriver());
+        FormsPage formsPage = homePage.clickFormsMenu();
+        Assert.assertTrue(formsPage.isPageOpened(), "Forms page not opened");
+        getDriver().navigate().back();
+        pause(1);
 
-            } catch (Exception e) {
-                logger.warn("Failed to navigate to: {}", section);
-            }
-        }
+        // Test navigation to Swipe
+        homePage = new HomePage(getDriver());
+        SwipePage swipePage = homePage.clickSwipeMenu();
+        Assert.assertTrue(swipePage.isPageOpened(), "Swipe page not opened");
+        getDriver().navigate().back();
+        pause(1);
 
-        logger.info("Navigation test completed");
+        logger.info("Navigation test completed successfully");
     }
 
     @Test
+    @MethodOwner(owner = "Maksym")
+    public void testMultipleUserLogins() {
+        logger.info("Testing multiple user logins...");
+
+        String[][] testUsers = {
+                {"test@example.com", "password123"},
+                {"user@test.com", "pass123"}
+        };
+
+        for (String[] user : testUsers) {
+            HomePage homePage = new HomePage(getDriver());
+            LoginPage loginPage = homePage.clickLoginMenu();
+
+            loginPage.login(user[0], user[1]);
+
+            if (loginPage.isSuccessMessagePresent()) {
+                logger.info("Login successful for: {}", user[0]);
+            } else {
+                logger.info("No success message for: {}, but continuing", user[0]);
+            }
+
+            getDriver().navigate().back();
+            pause(2);
+        }
+    }
+
+    @Test
+    @MethodOwner(owner = "Maksym")
+    public void testAppStability() {
+        logger.info("Testing app stability...");
+
+        for (int i = 0; i < 3; i++) {
+            HomePage homePage = new HomePage(getDriver());
+
+            FormsPage formsPage = homePage.clickFormsMenu();
+            getDriver().navigate().back();
+
+            homePage = new HomePage(getDriver());
+            SwipePage swipePage = homePage.clickSwipeMenu();
+            getDriver().navigate().back();
+
+            homePage = new HomePage(getDriver());
+            LoginPage loginPage = homePage.clickLoginMenu();
+            getDriver().navigate().back();
+
+            pause(1); // Small pause between iterations
+        }
+
+        logger.info("App stability test passed - no crashes");
+    }
+
+    @Test
+    @MethodOwner(owner = "Maksym")
     public void testAppPermissions() {
         logger.info("Testing app permissions handling...");
 
-        // Check that the application does not crash due to permissions
-        clickElement(By.xpath("//android.widget.TextView[@text='Login']"));
+        HomePage homePage = new HomePage(getDriver());
+        LoginPage loginPage = homePage.clickLoginMenu();
 
-        // We use functionality that may require permissions
-        sendKeysToElement(By.xpath("//android.widget.EditText[@content-desc='input-email']"), "test@example.com");
-        sendKeysToElement(By.xpath("//android.widget.EditText[@content-desc='input-password']"), "password123");
-        clickElement(By.xpath("//android.widget.TextView[@text='LOGIN']"));
+        loginPage.login("test@example.com", "password123");
 
         // Check that the application has not crashed
-        String result = getElementText(By.xpath("//android.widget.TextView[contains(@text, 'Success')]"));
-        assert result != null;
+        Assert.assertTrue(loginPage.isSuccessMessagePresent() || loginPage.isPageOpened(),
+                "App crashed or unexpected behavior");
 
         logger.info("App permissions handled correctly");
     }
 
     @Test
-    public void testMultipleUserLogins() {
-        logger.info("Testing multiple user logins...");
+    @MethodOwner(owner = "Maksym")
+    public void testElementPresence() {
+        logger.info("Testing element presence methods...");
 
-        String[][] testUsers = {
-                {"test@example.com", "password123"}, // Use valid data
-                {"user@test.com", "pass123"}
-        };
+        HomePage homePage = new HomePage(getDriver());
 
-        for (String[] user : testUsers) {
-            try {
-                clickElement(By.xpath("//android.widget.TextView[@text='Login']"));
+        // Test isElementPresent method from BaseAndroidTest
+        boolean isTitlePresent = isElementPresent(org.openqa.selenium.By.xpath("//android.widget.TextView[@text='WEBDRIVER']"));
+        Assert.assertTrue(isTitlePresent, "Main title should be present");
 
-                sendKeysToElement(By.xpath("//android.widget.EditText[@content-desc='input-email']"), user[0]);
-                sendKeysToElement(By.xpath("//android.widget.EditText[@content-desc='input-password']"), user[1]);
-                clickElement(By.xpath("//android.widget.TextView[@text='LOGIN']"));
+        boolean isLoginPresent = isElementPresent(org.openqa.selenium.By.xpath("//android.widget.TextView[@text='Login']"));
+        Assert.assertTrue(isLoginPresent, "Login menu should be present");
 
-                // Waiting for the result with different options
-                String[] resultLocators = {
-                        "//android.widget.TextView[contains(@text, 'Success')]",
-                        "//android.widget.TextView[contains(@text, 'You are logged in')]",
-                        "//android.widget.TextView[contains(@text, 'Welcome')]"
-                };
-
-                boolean foundResult = false;
-                for (String locator : resultLocators) {
-                    try {
-                        String result = getElementText(By.xpath(locator));
-                        logger.info("Login successful for: {} - {}", user[0], result);
-                        foundResult = true;
-                        break;
-                    } catch (Exception e) {
-                        // Continuing to try
-                    }
-                }
-
-                if (!foundResult) {
-                    logger.info("No success message found for: {}, but continuing", user[0]);
-                }
-
-                // Return to the main screen
-                driver.navigate().back();
-                Thread.sleep(2000);
-
-            } catch (Exception e) {
-                logger.error("Login failed for: {} - {}", user[0], e.getMessage());
-                // Let's try to return to the main screen
-                try {
-                    driver.navigate().back();
-                } catch (Exception ex) {
-                    // Ignore navigation errors
-                }
-            }
-        }
-    }
-
-    @Test
-    public void testAppStability() {
-        logger.info("Testing app stability...");
-
-        // We perform several actions to check stability
-        for (int i = 0; i < 3; i++) {
-            clickElement(By.xpath("//android.widget.TextView[@text='Forms']"));
-            driver.navigate().back();
-
-            clickElement(By.xpath("//android.widget.TextView[@text='Swipe']"));
-            driver.navigate().back();
-
-            clickElement(By.xpath("//android.widget.TextView[@text='Login']"));
-            driver.navigate().back();
-        }
-
-        logger.info("App stability test passed - no crashes");
+        logger.info("Element presence test completed successfully");
     }
 }

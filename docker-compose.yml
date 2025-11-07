@@ -8,6 +8,8 @@ services:
       - "4442:4442"
       - "4443:4443"
       - "4444:4444"
+    networks:
+      - test-network
 
   chrome:
     image: selenium/node-chrome:4.15.0
@@ -21,6 +23,8 @@ services:
       - SE_NODE_MAX_SESSIONS=4
     volumes:
       - /dev/shm:/dev/shm
+    networks:
+      - test-network
 
   firefox:
     image: selenium/node-firefox:4.15.0
@@ -33,6 +37,8 @@ services:
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
     volumes:
       - /dev/shm:/dev/shm
+    networks:
+      - test-network
 
   appium:
     image: appium/appium:latest
@@ -44,6 +50,8 @@ services:
       - APPIUM_RELAXED_SECURITY=1
     volumes:
       - /dev/shm:/dev/shm
+    networks:
+      - test-network
 
   jenkins:
     image: jenkins/jenkins:lts-jdk21
@@ -56,10 +64,12 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+    networks:
+      - test-network
 
-  tests:
+  test-runner:
     build: .
-    container_name: test-automation
+    container_name: test-runner
     depends_on:
       - selenium-hub
       - appium
@@ -67,7 +77,15 @@ services:
       - SELENIUM_HUB_URL=http://selenium-hub:4444
       - APPIUM_URL=http://appium:4723
     volumes:
-      - ./src/main/resources:/app/src/main/resources
+      - ./test-reports:/app/target/surefire-reports
+      - ./screenshots:/app/target/screenshots
+    networks:
+      - test-network
+    command: ["-Dconfig=carina-docker.properties"]
+
+networks:
+  test-network:
+    driver: bridge
 
 volumes:
   jenkins_home:
